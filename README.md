@@ -38,11 +38,14 @@ This Android app is designed to fetch data from a remote JSON source and display
 
 Include screenshots or GIFs showcasing your app's user interface and functionality. Add captions to explain each screenshot.
 
-![Screenshot 1](./screenshots/unfetchedPage.png)
-*Intialily, this app does not show any data until user click get data button.*
 
-![Screenshot 2](./screenshots/fetchedPage.png)
-*When user click the button, data will show up.*
+<img src="./screenshots/unfetchedPage.png" alt="Screenshot 1" width="300">
+
+*Initially, this app does not show any data until the user clicks the get data button.*
+
+<img src="./screenshots/fetchedPage.png" alt="Screenshot 2" width="300">
+
+*When the user clicks the button, data will show up.*
 
 ## Installation
 
