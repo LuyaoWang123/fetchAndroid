@@ -36,8 +36,9 @@ This Android app is designed to fetch data from a remote JSON source and display
 
 ## Screenshots
 
-Include screenshots or GIFs showcasing your app's user interface and functionality. Add captions to explain each screenshot.
+<img src="./screenshots/show.gif" alt="fetchingData" width=300>
 
+*When user click GET DATA button, it will fetch and show the data*
 
 <img src="./screenshots/unfetchedPage.png" alt="Screenshot 1" width="300">
 
