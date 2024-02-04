@@ -7,6 +7,8 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
+import android.content.Context;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -15,6 +17,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.RobolectricTestRunner;
+import org.robolectric.RuntimeEnvironment;
 
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
@@ -34,7 +37,8 @@ public class DataFetcherTest {
     public void setUp() {
         MockitoAnnotations.openMocks(this);
         mockWebServer = new MockWebServer();
-        dataFetcher = new DataFetcher();
+        Context context = RuntimeEnvironment.getApplication();
+        dataFetcher = new DataFetcher(context);
     }
 
     @Test
@@ -67,7 +71,7 @@ public class DataFetcherTest {
         String mockResponse = "[{\"listId\":10, \"name\":\"Item 1\"}]";
         mockWebServer.enqueue(new MockResponse().setBody(mockResponse));
         final Exception[] capturedException = new Exception[1];
-        CountDownLatch latch=new CountDownLatch(1);
+        CountDownLatch latch = new CountDownLatch(1);
         DataFetcher.DataResponseListener mockListener = new DataFetcher.DataResponseListener() {
             @Override
             public void onDataFetched(List<ItemInterface> data) {
@@ -82,8 +86,8 @@ public class DataFetcherTest {
         };
 
         // Act
-        String url=mockWebServer.url("/").toString();
-        dataFetcher.fetchData(url,mockListener);
+        String url = mockWebServer.url("/").toString();
+        dataFetcher.fetchData(url, mockListener);
 
         // Wait for async response
         latch.await(2, TimeUnit.SECONDS);

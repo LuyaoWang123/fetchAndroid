@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * The MainActivity class represents the main activity of the Android application.
@@ -30,11 +31,13 @@ public class MainActivity extends AppCompatActivity {
         btnGetData = findViewById(R.id.btn_getData);
         itemView = findViewById(R.id.lv_itemReport);
         itemView.setLayoutManager(new LinearLayoutManager(this));
-        DataFetcher dataFetcher = new DataFetcher();
+        DataFetcher dataFetcher = new DataFetcher(this);
 
         // click listeners for each button
         String url="https://fetch-hiring.s3.amazonaws.com/hiring.json";
-        btnGetData.setOnClickListener(v -> dataFetcher.fetchData(url,new DataFetcher.DataResponseListener() {
+
+        btnGetData.setOnClickListener(v -> {
+            dataFetcher.fetchData(url,new DataFetcher.DataResponseListener() {
             @Override
             public void onDataFetched(List<ItemInterface> data) {
                 itemList = data;
@@ -52,7 +55,9 @@ public class MainActivity extends AppCompatActivity {
             public void onError(Exception error) {
                 Toast.makeText(MainActivity.this, "Sorry, something wrong with the data source", Toast.LENGTH_SHORT).show();
             }
-        }));
+        });
+
+        });
         // initialize the adapter with an empty list
         itemList = new ArrayList<>();
         adapter = new RecyclerAdapter(itemList);

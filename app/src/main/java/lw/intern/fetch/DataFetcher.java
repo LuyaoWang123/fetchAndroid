@@ -1,16 +1,19 @@
 package lw.intern.fetch;
 
+import android.content.Context;
 import android.util.JsonReader;
 import android.util.JsonToken;
 
 import androidx.annotation.NonNull;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import okhttp3.Cache;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.OkHttpClient;
@@ -33,8 +36,18 @@ public class DataFetcher {
         void onError(Exception error);
     }
 
-    public DataFetcher() {
-        this.client = new OkHttpClient();
+    public DataFetcher(Context context) {
+        // Specify the cache size
+        int cacheSize = 5 * 1024 * 1024; // 5 MB
+
+        // Use the internal cache directory of the app for caching
+        File cacheDirectory = new File(context.getCacheDir(), "httpCache");
+        Cache cache = new Cache(cacheDirectory, cacheSize);
+
+        // Build the OkHttpClient and set the cache
+        this.client = new OkHttpClient.Builder()
+                .cache(cache)
+                .build();
     }
 
     /**
