@@ -20,10 +20,12 @@ public class MainActivity extends AppCompatActivity {
     Button btnGetData; // a button to retrieve data
     RecyclerView itemView; // a list to show data to user
     RecyclerAdapter adapter; // an adapter to manage the list shown to user
-    List<ItemInterface> itemList; // data list
+    // data list, singleton--avoid being recreated, multiple activities
+    // viewmodel--independent from main activity
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
@@ -32,35 +34,43 @@ public class MainActivity extends AppCompatActivity {
         itemView = findViewById(R.id.lv_itemReport);
         itemView.setLayoutManager(new LinearLayoutManager(this));
         DataFetcher dataFetcher = new DataFetcher(this);
+        adapter = new RecyclerAdapter(ItemListSingleton.getInstance().getItemList());
+        itemView.setAdapter(adapter);
 
         // click listeners for each button
-        String url="https://fetch-hiring.s3.amazonaws.com/hiring.json";
+        String url = "https://fetch-hiring.s3.amazonaws.com/hiring.json";
 
-        btnGetData.setOnClickListener(v -> {
-            dataFetcher.fetchData(url,new DataFetcher.DataResponseListener() {
-            @Override
-            public void onDataFetched(List<ItemInterface> data) {
-                itemList = data;
-                adapter.updateItems(itemList);
-                runOnUiThread(new Runnable() {
+        if (ItemListSingleton.getInstance().getItemList().size() != 0) {
+            adapter.notifyDataSetChanged();
+        } else {
+            btnGetData.setOnClickListener(v -> {
+                dataFetcher.fetchData(url, new DataFetcher.DataResponseListener() {
                     @Override
-                    public void run() {
-                        adapter.notifyDataSetChanged();
-                        Toast.makeText(MainActivity.this, "Data fetched successfully", Toast.LENGTH_SHORT).show();
+                    public void onDataFetched(List<ItemInterface> data) {
+//                    itemList = data;
+                        ItemListSingleton.getInstance().setItemList(data);
+                        adapter.updateItems(data);
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                adapter.notifyDataSetChanged();
+                                Toast.makeText(MainActivity.this, "Data fetched successfully", Toast.LENGTH_SHORT).show();
+                            }
+                        });
+                    }
+
+                    @Override
+                    public void onError(Exception error) {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                Toast.makeText(MainActivity.this, "Sorry, something wrong with the data source", Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                        );
                     }
                 });
-            }
-
-            @Override
-            public void onError(Exception error) {
-                Toast.makeText(MainActivity.this, "Sorry, something wrong with the data source", Toast.LENGTH_SHORT).show();
-            }
-        });
-
-        });
-        // initialize the adapter with an empty list
-        itemList = new ArrayList<>();
-        adapter = new RecyclerAdapter(itemList);
-        itemView.setAdapter(adapter);
+            });
+        }
     }
 }

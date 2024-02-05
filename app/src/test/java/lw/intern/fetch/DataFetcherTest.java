@@ -61,7 +61,7 @@ public class DataFetcherTest {
         // Assert
         verify(mockListener, times(1)).onDataFetched(argumentCaptor.capture());
         assertTrue("Data was not fetched", argumentCaptor.getValue() != null);
-        latch.countDown();  // Manually trigger the countdown
+        latch.countDown();
     }
 
     @Test

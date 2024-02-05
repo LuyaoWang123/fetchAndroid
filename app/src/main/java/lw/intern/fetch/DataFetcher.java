@@ -65,7 +65,7 @@ public class DataFetcher {
             }
 
             @Override
-            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+            public void onResponse(@NonNull Call call, @NonNull Response response) {
                 if (!response.isSuccessful()) {
                     listener.onError(new Exception(response.toString()));
                     return;
