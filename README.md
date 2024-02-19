@@ -16,6 +16,7 @@ An Android app written in Java that retrieves data from [https://fetch-hiring.s3
 - [Features](#features)
 - [Screenshots](#screenshots)
 - [Installation](#installation)
+- [Update](#update)
 - [Usage](#usage)
 - [Contributing](#contributing)
 - [License](#license)
@@ -55,3 +56,15 @@ To install and run the app, follow these steps:
 1. Clone the repository:
    ```bash
    git clone https://github.com/LuyaoWang123/fetchAndroid.git
+
+2. Choose a branch:
+
+   1.1 main: implement by singleton
+
+   1.2 mvvm: implement by mvvm
+
+## Update
+
+In the **mvvm** branch, this app implements the viewmodel to fix the bug caused by lifecycle problem, specically, when user rotates the phone, the data will disappear.
+
+While in the **main** branch, this app implements the singleton to fix the bug caused by lifecycle problem, as described above.
