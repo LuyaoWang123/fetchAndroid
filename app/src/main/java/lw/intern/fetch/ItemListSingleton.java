@@ -5,7 +5,7 @@ import java.util.List;
 
 public class ItemListSingleton {
     private static ItemListSingleton instance;
-    private List<ItemInterface> itemList;
+    private final List<ItemInterface> itemList;
 
     private ItemListSingleton() {
         itemList = new ArrayList<>();

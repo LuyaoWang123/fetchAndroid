@@ -15,7 +15,7 @@ import java.util.List;
  * It binds data from a list of items to the corresponding views in the RecyclerView.
  */
 public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.RecyclerViewHolder> {
-    private List<ItemInterface> items;
+    private final List<ItemInterface> items;
 
     /**
      * The RecyclerViewHolder class represents a single item view in the RecyclerView.

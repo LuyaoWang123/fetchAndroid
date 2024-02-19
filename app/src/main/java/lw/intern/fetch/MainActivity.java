@@ -5,12 +5,11 @@ import android.widget.Button;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * The MainActivity class represents the main activity of the Android application.
@@ -21,7 +20,7 @@ public class MainActivity extends AppCompatActivity {
     RecyclerView itemView; // a list to show data to user
     RecyclerAdapter adapter; // an adapter to manage the list shown to user
     // data list, singleton--avoid being recreated, multiple activities
-    // viewmodel--independent from main activity
+    // view model--independent from main activity
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,48 +28,32 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        // initialize view model
+        MainViewModel viewModel=new ViewModelProvider(this).get(MainViewModel.class);
+
         // assign values to each control on the lay out
         btnGetData = findViewById(R.id.btn_getData);
         itemView = findViewById(R.id.lv_itemReport);
         itemView.setLayoutManager(new LinearLayoutManager(this));
-        DataFetcher dataFetcher = new DataFetcher(this);
-        adapter = new RecyclerAdapter(ItemListSingleton.getInstance().getItemList());
+
+        adapter = new RecyclerAdapter(new ArrayList<>());
         itemView.setAdapter(adapter);
+
+        // using view model to observe if there is an error, and report error message
+        // to user
+        viewModel.getErrorLiveData().observe(this, error-> Toast.makeText(MainActivity.this,error,Toast.LENGTH_SHORT).show());
+
+        // using view model to observe if:
+        // 1. data changes in view model
+        // 2. lifecycle-aware
+        viewModel.getItems().observe(this, items->{
+            adapter.updateItems(items);
+            adapter.notifyDataSetChanged();
+            Toast.makeText(MainActivity.this, "Data fetched successfully", Toast.LENGTH_SHORT).show();
+        });
 
         // click listeners for each button
         String url = "https://fetch-hiring.s3.amazonaws.com/hiring.json";
-
-        if (ItemListSingleton.getInstance().getItemList().size() != 0) {
-            adapter.notifyDataSetChanged();
-        } else {
-            btnGetData.setOnClickListener(v -> {
-                dataFetcher.fetchData(url, new DataFetcher.DataResponseListener() {
-                    @Override
-                    public void onDataFetched(List<ItemInterface> data) {
-//                    itemList = data;
-                        ItemListSingleton.getInstance().setItemList(data);
-                        adapter.updateItems(data);
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                adapter.notifyDataSetChanged();
-                                Toast.makeText(MainActivity.this, "Data fetched successfully", Toast.LENGTH_SHORT).show();
-                            }
-                        });
-                    }
-
-                    @Override
-                    public void onError(Exception error) {
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                Toast.makeText(MainActivity.this, "Sorry, something wrong with the data source", Toast.LENGTH_SHORT).show();
-                            }
-                        }
-                        );
-                    }
-                });
-            });
-        }
+        btnGetData.setOnClickListener(v-> viewModel.fetchData(url, new DataFetcher(this)));
     }
 }
